@@ -12,12 +12,14 @@ import com.microsoft.spring.data.gremlin.mapping.GremlinPersistentEntity;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.model.ConvertingPropertyAccessor;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import static com.microsoft.spring.data.gremlin.common.Constants.GREMLIN_PROPERTY_CLASSNAME;
 import static com.microsoft.spring.data.gremlin.common.Constants.PROPERTY_ID;
@@ -38,6 +40,9 @@ public class GremlinSourceVertexWriter implements GremlinSourceWriter {
         final ConvertingPropertyAccessor accessor = converter.getPropertyAccessor(domain);
 
         for (final Field field : FieldUtils.getAllFields(domain.getClass())) {
+            if(field.getAnnotation(Transient.class) != null || Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
             Assert.notNull(property, "persistence property should not be null");
 
