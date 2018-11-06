@@ -40,7 +40,7 @@ public class GremlinSourceVertexWriter implements GremlinSourceWriter {
         final ConvertingPropertyAccessor accessor = converter.getPropertyAccessor(domain);
 
         for (final Field field : FieldUtils.getAllFields(domain.getClass())) {
-            if(field.getAnnotation(Transient.class) != null || Modifier.isTransient(field.getModifiers())) {
+            if (field.getAnnotation(Transient.class) != null || Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());

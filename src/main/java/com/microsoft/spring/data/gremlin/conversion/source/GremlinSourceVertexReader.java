@@ -37,34 +37,19 @@ public class GremlinSourceVertexReader extends AbstractGremlinSourceReader imple
         final GremlinPersistentEntity persistentEntity = converter.getPersistentEntity(domainClass);
 
         for (final Field field : FieldUtils.getAllFields(domainClass)) {
-            if(field.getAnnotation(Transient.class) != null  || Modifier.isTransient(field.getModifiers())) {
+            if (field.getAnnotation(Transient.class) != null  || Modifier.isTransient(field.getModifiers())) {
                 // If the field is transient - ignore
                 continue;
             }
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
-            if(property == null) {
+            if (property != null) {
+                if (field.getName().equals(Constants.PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
+                    accessor.setProperty(property, super.getGremlinSourceId(source));
+                } else if (source.getProperties().containsKey(field.getName())) {
 
-                field.setAccessible(true);
-                try {
-                    Object property_value = field.get(domain);
-                    if(property_value != null) {
-                        // If the field has default value - ignore
-                        continue;
-                    }
-                } catch (IllegalAccessException e) {
-
+                    final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
+                    accessor.setProperty(property, value);
                 }
-
-                if(field.getAnnotation(NonNull.class) != null) {
-                    Assert.notNull(property, "persistence property should not be null");
-                }
-            }
-
-            if (field.getName().equals(Constants.PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
-                accessor.setProperty(property, super.getGremlinSourceId(source));
-            } else {
-                final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
-                accessor.setProperty(property, value);
             }
         }
 
