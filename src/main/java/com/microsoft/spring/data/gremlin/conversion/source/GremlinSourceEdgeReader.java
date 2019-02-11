@@ -40,14 +40,14 @@ public class GremlinSourceEdgeReader implements GremlinSourceReader {
            final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
 //           Assert.notNull(property, "persistence property should not be null");
 
-           if(property != null) {
+           if (property != null) {
                if (field.getName().equals(PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
                    accessor.setProperty(property, source.getId());
                    continue;
                } else if (field.getAnnotation(EdgeFrom.class) != null || field.getAnnotation(EdgeTo.class) != null) {
-                   // We cannot do that here as the gremlin will not tell more information about vertex except Id. After the
-                   // query of Edge end, we can get the Id of vertex from/to. And then we will do extra 2 query to obtain
-                   // the 2 vertex and complete the edge.
+                   // We cannot do that here as the gremlin will not tell more information about vertex except Id.
+                   // After the query of Edge end, we can get the Id of vertex from/to. And then we will do extra 2
+                   // query to obtain the 2 vertex and complete the edge.
                    // That work will be wrapped in GremlinTemplate insert, and skip the property here.
                    continue;
                }
@@ -55,7 +55,7 @@ public class GremlinSourceEdgeReader implements GremlinSourceReader {
                accessor.setProperty(property, source.getProperties().get(field.getName()));
            }
            else {
-               if(field.getAnnotation(NonNull.class) != null) {
+               if (field.getAnnotation(NonNull.class) != null) {
                    throw new AssertionError("Missing non-null property " + field.getName());
                }
            }
