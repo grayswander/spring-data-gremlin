@@ -20,7 +20,8 @@ import static com.microsoft.spring.data.gremlin.common.Constants.*;
 public abstract class AbstractGremlinScriptLiteral {
 
     private static String generateProperty(@NonNull String name, @NonNull String value) {
-        return String.format(GREMLIN_PRIMITIVE_PROPERTY_STRING, name, value);
+        final String escapedValue = value.replace("'", "\\'");
+        return String.format(GREMLIN_PRIMITIVE_PROPERTY_STRING, name, escapedValue);
     }
 
     private static String generateProperty(@NonNull String name, @NonNull Integer value) {
@@ -49,7 +50,8 @@ public abstract class AbstractGremlinScriptLiteral {
             final String propertyScript;
 
             try {
-                propertyScript = generateProperty(name, GremlinUtils.getObjectMapper().writeValueAsString(value));
+                propertyScript = generateProperty(name, GremlinUtils.getObjectMapper().writeValueAsString(value))
+                        .replace("'", "\\'");
             } catch (JsonProcessingException e) {
                 throw new GremlinUnexpectedEntityTypeException("Failed to write object to String", e);
             }
