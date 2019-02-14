@@ -50,8 +50,7 @@ public abstract class AbstractGremlinScriptLiteral {
             final String propertyScript;
 
             try {
-                propertyScript = generateProperty(name, GremlinUtils.getObjectMapper().writeValueAsString(value))
-                        .replace("'", "\\'");
+                propertyScript = generateProperty(name, GremlinUtils.getObjectMapper().writeValueAsString(value));
             } catch (JsonProcessingException e) {
                 throw new GremlinUnexpectedEntityTypeException("Failed to write object to String", e);
             }
