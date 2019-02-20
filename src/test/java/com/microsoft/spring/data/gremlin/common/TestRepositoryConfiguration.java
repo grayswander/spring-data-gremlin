@@ -13,13 +13,19 @@ import org.springframework.context.annotation.PropertySource;
 
 @EnableGremlinRepositories
 @PropertySource(value = {"classpath:application.properties"})
-@EnableConfigurationProperties(GremlinConfiguration.class)
+@EnableConfigurationProperties(TestGremlinProperties.class)
 public class TestRepositoryConfiguration extends AbstractGremlinConfiguration {
 
     @Autowired
-    private GremlinConfiguration config;
+    private TestGremlinProperties testProps;
 
-    public GremlinConfiguration getGremlinConfiguration() {
-        return this.config;
+    @Override
+    public GremlinConfig getGremlinConfig() {
+        return GremlinConfig.builder(testProps.getEndpoint(), testProps.getUsername(), testProps.getPassword())
+                .port(testProps.getPort())
+                .telemetryAllowed(testProps.isTelemetryAllowed())
+                .sslEnabled(testProps.isSslEnabled())
+                .serializer(testProps.getSerializer())
+                .build();
     }
 }

@@ -8,9 +8,11 @@ package com.microsoft.spring.data.gremlin.conversion.result;
 import com.microsoft.spring.data.gremlin.conversion.source.GremlinSource;
 import org.apache.tinkerpop.gremlin.driver.Result;
 
-public interface GremlinResultReader {
+import java.util.List;
+
+public interface GremlinResultsReader {
     /**
-     * Read the Gremlin returned Result to GremlinSource.
+     * Read the Gremlin returned Results to GremlinSource.
      */
-    void read(Result result, GremlinSource source);
+    void read(List<Result> results, GremlinSource source);
 }

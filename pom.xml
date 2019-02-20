@@ -6,7 +6,7 @@
 
     <groupId>com.microsoft.spring.data.gremlin</groupId>
     <artifactId>spring-data-gremlin</artifactId>
-    <version>2.0.1-MBI-2</version>
+    <version>2.1.1-MBI-1</version>
 
     <name>Spring Data Gremlin</name>
     <description>Gremlin support for Spring Data</description>
@@ -68,6 +68,7 @@
         <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
 
         <org.apache.tinkerpop.gremlin.driver.version>3.2.4</org.apache.tinkerpop.gremlin.driver.version>
+        <apache.commons.lang3.version>3.7</apache.commons.lang3.version>
         <org.projectlombok.version>1.16.18</org.projectlombok.version>
         <mockito.core.version>2.8.9</mockito.core.version>
         <azure.applicationinsights.version>2.0.1</azure.applicationinsights.version>
@@ -81,13 +82,6 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
                 <version>${spring.springframework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -117,6 +111,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
+            <version>${spring.data.version}</version>
         </dependency>
 
         <!-- Apache Tinkerpop Gremlin Driver -->
@@ -124,6 +119,13 @@
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-driver</artifactId>
             <version>${org.apache.tinkerpop.gremlin.driver.version}</version>
+        </dependency>
+
+        <!-- Apache Commons Lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache.commons.lang3.version}</version>
         </dependency>
 
         <!-- Spring context -->
@@ -144,6 +146,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.test.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -152,18 +155,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${org.projectlombok.version}</version>
-        </dependency>
-
-        <!-- Spring Boot Configuration Processor -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-        </dependency>
-
-        <!-- Spring Boot -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
         </dependency>
 
         <!-- Application Insights -->
@@ -181,7 +172,6 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>ApplicationInsights.xml</include>
-                    <include>META-INF/project.properties</include>
                 </includes>
             </resource>
         </resources>
@@ -313,6 +303,21 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Write Pom Version to jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -324,6 +329,18 @@
                 <skip.integration.tests>false</skip.integration.tests>
             </properties>
         </profile>
-    </profiles>
 
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <properties>
+                <ai.instrumentKey>${telemetry.instrumentationKey}</ai.instrumentKey>
+            </properties>
+        </profile>
+
+    </profiles>
 </project>

@@ -12,6 +12,7 @@ import com.microsoft.spring.data.gremlin.common.domain.Relationship;
 import com.microsoft.spring.data.gremlin.conversion.source.GremlinSource;
 import com.microsoft.spring.data.gremlin.mapping.GremlinMappingContext;
 import com.microsoft.spring.data.gremlin.repository.support.GremlinEntityInformation;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,23 +49,23 @@ public class MappingGremlinConverterUnitTest {
         Assert.assertNotNull(this.converter.getConversionService());
 
         final Person person = new Person(TestConstants.VERTEX_PERSON_ID, TestConstants.VERTEX_PERSON_NAME);
-        final Field[] fields = Person.class.getDeclaredFields();
+        final Field[] fields = FieldUtils.getAllFields(Person.class);
 
         Assert.assertNotNull(this.converter.getPropertyAccessor(person));
         Assert.assertEquals(fields.length, 2);
-        Assert.assertEquals(converter.getFieldValue(person, fields[0].getName()), TestConstants.VERTEX_PERSON_ID);
-        Assert.assertEquals(converter.getFieldValue(person, fields[1].getName()), TestConstants.VERTEX_PERSON_NAME);
+        Assert.assertEquals(converter.getIdFieldValue(person), TestConstants.VERTEX_PERSON_ID);
     }
 
     @Test
     public void testMappingGremlinConverterVertexRead() {
         final Person person = new Person(TestConstants.VERTEX_PERSON_ID, TestConstants.VERTEX_PERSON_NAME);
         final GremlinEntityInformation<Person, String> info = new GremlinEntityInformation<>(Person.class);
-        final GremlinSource source = info.getGremlinSource();
+        final GremlinSource source = info.createGremlinSource();
 
         this.converter.write(person, source);
 
-        Assert.assertEquals(source.getId(), person.getId());
+        Assert.assertTrue(source.getId().isPresent());
+        Assert.assertEquals(source.getId().get(), person.getId());
         Assert.assertEquals(source.getProperties().get(TestConstants.PROPERTY_NAME), person.getName());
     }
 
@@ -76,11 +77,12 @@ public class MappingGremlinConverterUnitTest {
         final Relationship relationship = new Relationship(TestConstants.EDGE_RELATIONSHIP_ID,
                 TestConstants.EDGE_RELATIONSHIP_NAME, TestConstants.EDGE_RELATIONSHIP_LOCATION, person, project);
         final GremlinEntityInformation<Relationship, String> info = new GremlinEntityInformation<>(Relationship.class);
-        final GremlinSource source = info.getGremlinSource();
+        final GremlinSource source = info.createGremlinSource();
 
         this.converter.write(relationship, source);
 
-        Assert.assertEquals(source.getId(), relationship.getId());
+        Assert.assertTrue(source.getId().isPresent());
+        Assert.assertEquals(source.getId().get(), relationship.getId());
         Assert.assertEquals(source.getProperties().get(TestConstants.PROPERTY_NAME), relationship.getName());
     }
 }

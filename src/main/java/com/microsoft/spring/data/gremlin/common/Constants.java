@@ -25,7 +25,7 @@ public class Constants {
     public static final String DEFAULT_VERTEX_LABEL = "";
     public static final String DEFAULT_EDGE_LABEL = "";
     public static final String DEFAULT_COLLECTION_NAME = "";
-    public static final String DEFAULT_ENDPOINT_PORT = "443";
+    public static final int DEFAULT_ENDPOINT_PORT = 443;
     public static final String DEFAULT_REPOSITORY_IMPLEMENT_POSTFIX = "Impl";
 
     public static final String GREMLIN_MODULE_NAME = "Gremlin";
@@ -36,14 +36,9 @@ public class Constants {
     public static final String GREMLIN_PRIMITIVE_INVOKE = ".";
     public static final String GREMLIN_PRIMITIVE_DROP = "drop()";
 
-    public static final String GREMLIN_PRIMITIVE_EDGE = "E('%s')";
     public static final String GREMLIN_PRIMITIVE_EDGE_ALL = "E()";
-    public static final String GREMLIN_PRIMITIVE_ADD_EDGE = "addE('%s')";
 
-    public static final String GREMLIN_PRIMITIVE_VERTEX = "V('%s')";
     public static final String GREMLIN_PRIMITIVE_VERTEX_ALL = "V()";
-    public static final String GREMLIN_PRIMITIVE_ADD_VERTEX = "addV('%s')";
-    public static final String GREMLIN_PRIMITIVE_TO_VERTEX = "to(g.V('%s'))";
 
     public static final String GREMLIN_PRIMITIVE_HAS_STRING = "has('%s', '%s')";
     public static final String GREMLIN_PRIMITIVE_HAS_NUMBER = "has('%s', %d)";
@@ -57,13 +52,20 @@ public class Constants {
     public static final String GREMLIN_PRIMITIVE_OR = "or()";
     public static final String GREMLIN_PRIMITIVE_WHERE = "where(%s)";
 
+    public static final String GREMLIN_QUERY_BARRIER = "barrier";
+
     public static final String GREMLIN_PRIMITIVE_VALUES = "values('%s')";
     public static final String GREMLIN_PRIMITIVE_IS = "is(%s)";
     public static final String GREMLIN_PRIMITIVE_GT = "gt(%d)";
     public static final String GREMLIN_PRIMITIVE_LT = "lt(%d)";
+    public static final String GREMLIN_PRIMITIVE_BETWEEN = "between(%d, %d)";
 
     public static final String GREMLIN_PRIMITIVE_IS_GT = String.format(GREMLIN_PRIMITIVE_IS, GREMLIN_PRIMITIVE_GT);
     public static final String GREMLIN_PRIMITIVE_IS_LT = String.format(GREMLIN_PRIMITIVE_IS, GREMLIN_PRIMITIVE_LT);
+    public static final String GREMLIN_PRIMITIVE_IS_BETWEEN = String.format(
+            GREMLIN_PRIMITIVE_IS,
+            GREMLIN_PRIMITIVE_BETWEEN
+    );
 
     public static final String GREMLIN_SCRIPT_EDGE_ALL = String.join(GREMLIN_PRIMITIVE_INVOKE,
             GREMLIN_PRIMITIVE_GRAPH,
@@ -86,4 +88,6 @@ public class Constants {
             GREMLIN_PRIMITIVE_VERTEX_ALL,
             GREMLIN_PRIMITIVE_DROP
     );
+
+    public static final String GREMLIN_PROPERTY_CLASSNAME = "_classname";
 }

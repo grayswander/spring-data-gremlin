@@ -7,6 +7,7 @@ package com.microsoft.spring.data.gremlin.query;
 
 import com.microsoft.spring.data.gremlin.common.GremlinEntityType;
 import com.microsoft.spring.data.gremlin.conversion.MappingGremlinConverter;
+import com.microsoft.spring.data.gremlin.conversion.source.GremlinSource;
 import com.microsoft.spring.data.gremlin.query.query.GremlinQuery;
 
 import java.util.List;
@@ -20,29 +21,33 @@ public interface GremlinOperations {
 
     void deleteAll(GremlinEntityType type);
 
-    <T> boolean isEmptyGraph(T object);
+    <T> void deleteAll(GremlinSource<T> source);
 
-    <T> void deleteById(Object id, Class<T> domainClass);
+    <T> boolean isEmptyGraph(GremlinSource<T> source);
 
-    <T> T insert(T object);
+    <T> boolean existsById(Object id, GremlinSource<T> source);
 
-    <T> T findById(Object id, Class<T> domainClass);
+    <T> void deleteById(Object id, GremlinSource<T> source);
 
-    <T> T findVertexById(Object id, Class<T> domainClass);
+    <T> T insert(T object, GremlinSource<T> source);
 
-    <T> T findEdgeById(Object id, Class<T> domainClass);
+    <T> T findById(Object id, GremlinSource<T> source);
 
-    <T> T update(T object);
+    <T> T findVertexById(Object id, GremlinSource<T> source);
 
-    <T> T save(T object);
+    <T> T findEdgeById(Object id, GremlinSource<T> source);
 
-    <T> List<T> findAll(Class<T> domainClass);
+    <T> T update(T object, GremlinSource<T> source);
+
+    <T> T save(T object, GremlinSource<T> source);
+
+    <T> List<T> findAll(GremlinSource<T> source);
 
     long vertexCount();
 
     long edgeCount();
 
-    <T> List<T> find(GremlinQuery query, Class<T> domainClass);
+    <T> List<T> find(GremlinQuery query, GremlinSource<T> source);
 
     MappingGremlinConverter getMappingConverter();
 }

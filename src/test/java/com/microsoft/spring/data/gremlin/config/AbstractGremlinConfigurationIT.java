@@ -5,37 +5,32 @@
  */
 package com.microsoft.spring.data.gremlin.config;
 
-import com.microsoft.spring.data.gremlin.common.GremlinConfiguration;
+import com.microsoft.spring.data.gremlin.common.TestRepositoryConfiguration;
+import com.microsoft.spring.data.gremlin.telemetry.EmptyTracker;
+import com.microsoft.spring.data.gremlin.telemetry.TelemetryTracker;
 import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.lang.NonNull;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@PropertySource(value = {"classpath:application.properties"})
-@EnableConfigurationProperties(GremlinConfiguration.class)
+@ContextConfiguration(classes = TestRepositoryConfiguration.class)
 public class AbstractGremlinConfigurationIT {
 
-    private TestConfig testConfig;
+    private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(TestRepositoryConfiguration.class));
 
     @Autowired
-    private GremlinConfiguration config;
-
-    @Before
-    public void setup() {
-        this.testConfig = new TestConfig(this.config);
-    }
+    private TestRepositoryConfiguration testConfig;
 
     @Test
     public void testGremlinFactory() {
         Assert.assertNotNull(this.testConfig.gremlinFactory());
-        Assert.assertNotNull(this.testConfig.gremlinFactory().getGremlinClient());
     }
 
     @Test
@@ -47,21 +42,24 @@ public class AbstractGremlinConfigurationIT {
     @Test
     @SneakyThrows
     public void testGremlinTemplate() {
-        Assert.assertNotNull(this.testConfig.gremlinTemplate());
+        Assert.assertNotNull(this.testConfig.gremlinTemplate(testConfig.gremlinFactory()));
     }
 
-    private class TestConfig extends AbstractGremlinConfiguration {
+    @Test
+    public void testTelemetryTrackerBean() {
+        this.contextRunner
+                .withPropertyValues("gremlin.telemetry-allowed=true")
+                .run(context -> Assert.assertNotNull(context.getBean(TelemetryTracker.class)));
 
-        private GremlinConfiguration config;
+        this.contextRunner
+                .run(context -> Assert.assertNotNull(context.getBean(TelemetryTracker.class)));
+    }
 
-        public TestConfig(@NonNull GremlinConfiguration config) {
-            this.config = config;
-        }
-
-        @Override
-        public GremlinConfiguration getGremlinConfiguration() {
-            return this.config;
-        }
+    @Test
+    public void testDisabledTelemetry() {
+        this.contextRunner
+                .withPropertyValues("gremlin.telemetry-allowed=false")
+                .run(context -> Assert.assertTrue(context.getBean(TelemetryTracker.class) instanceof EmptyTracker));
     }
 }
 

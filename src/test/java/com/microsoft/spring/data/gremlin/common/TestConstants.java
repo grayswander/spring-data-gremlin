@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class TestConstants {
 
     public static final int DEFAULT_ENDPOINT_PORT = 443;
+    public static final int ILLEGAL_ENDPOINT_PORT = -1;
     public static final String FAKE_ENDPOINT = "XXX-xxx.XXX-xxx.cosmosdb.azure.com";
     public static final String FAKE_USERNAME = "XXX-xxx.username";
     public static final String FAKE_PASSWORD = "XXX-xxx.password";
@@ -58,4 +59,6 @@ public class TestConstants {
     public static final String EDGE_RELATIONSHIP_2_ID = "555555";
     public static final String EDGE_RELATIONSHIP_2_NAME = "create";
     public static final String EDGE_RELATIONSHIP_2_LOCATION = "shanghai";
+
+    public static final String VERTEX_LABEL = "label-vertex";
 }

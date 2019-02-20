@@ -8,11 +8,12 @@ package com.microsoft.spring.data.gremlin.conversion.source;
 import com.microsoft.spring.data.gremlin.annotation.EdgeSet;
 import com.microsoft.spring.data.gremlin.annotation.VertexSet;
 import com.microsoft.spring.data.gremlin.common.Constants;
+import com.microsoft.spring.data.gremlin.common.GremlinUtils;
 import com.microsoft.spring.data.gremlin.conversion.MappingGremlinConverter;
 import com.microsoft.spring.data.gremlin.exception.GremlinUnexpectedSourceTypeException;
 import com.microsoft.spring.data.gremlin.mapping.GremlinPersistentEntity;
-import com.microsoft.spring.data.gremlin.repository.support.GremlinEntityInformation;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.model.ConvertingPropertyAccessor;
@@ -30,7 +31,7 @@ public class GremlinSourceGraphWriter implements GremlinSourceWriter {
         Assert.isInstanceOf(GremlinSourceGraph.class, sourceGraph, "should be instance of GremlinSourceGraph ");
 
         for (final Object object : objectList) {
-            final GremlinSource source = new GremlinEntityInformation<>(object.getClass()).getGremlinSource();
+            final GremlinSource source = GremlinUtils.toGremlinSource(object.getClass());
 
             source.doGremlinSourceWrite(object, mappingConverter);
             sourceGraph.addGremlinSource(source);
@@ -48,7 +49,7 @@ public class GremlinSourceGraphWriter implements GremlinSourceWriter {
         final GremlinPersistentEntity<?> persistentEntity = converter.getPersistentEntity(domain.getClass());
         final ConvertingPropertyAccessor accessor = converter.getPropertyAccessor(domain);
 
-        for (final Field field : domain.getClass().getDeclaredFields()) {
+        for (final Field field : FieldUtils.getAllFields(domain.getClass())) {
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
             Assert.notNull(property, "persistence property should not be null");
 

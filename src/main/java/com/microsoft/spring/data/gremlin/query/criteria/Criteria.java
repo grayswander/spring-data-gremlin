@@ -25,7 +25,7 @@ public class Criteria {
         this.subCriteria = new ArrayList<>();
     }
 
-    public static boolean isBinaryOperation(CriteriaType type) {
+    private static boolean isBinaryOperation(CriteriaType type) {
         switch (type) {
             case AND:
             case OR:
@@ -35,11 +35,12 @@ public class Criteria {
         }
     }
 
-    public static boolean isUnaryOperation(CriteriaType type) {
+    private static boolean isUnaryOperation(CriteriaType type) {
         switch (type) {
             case EXISTS:
             case AFTER:
             case BEFORE:
+            case BETWEEN:
             case IS_EQUAL:
                 return true;
             default:
@@ -66,7 +67,7 @@ public class Criteria {
         criteria.subCriteria.add(left);
         criteria.subCriteria.add(right);
 
-        Assert.isTrue(criteria.getSubCriteria().size() == 2, "Binary should contains 2 subCriteria");
+        Assert.isTrue(criteria.getSubCriteria().size() == 2, "Binary should contain 2 subCriteria");
 
         return criteria;
     }

@@ -11,6 +11,7 @@ import com.microsoft.spring.data.gremlin.conversion.MappingGremlinConverter;
 import com.microsoft.spring.data.gremlin.exception.GremlinUnexpectedSourceTypeException;
 import com.microsoft.spring.data.gremlin.mapping.GremlinPersistentEntity;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.model.ConvertingPropertyAccessor;
@@ -23,34 +24,26 @@ import java.lang.reflect.Field;
 public class GremlinSourceVertexReader extends AbstractGremlinSourceReader implements GremlinSourceReader {
 
     @Override
-    public <T extends Object> T read(@NonNull Class<T> type, @NonNull MappingGremlinConverter converter,
-                                     @NonNull GremlinSource source) {
+    public <T extends Object> T read(@NonNull Class<T> domainClass, @NonNull MappingGremlinConverter converter,
+                                     @NonNull GremlinSource<T> source) {
         if (!(source instanceof GremlinSourceVertex)) {
             throw new GremlinUnexpectedSourceTypeException("should be instance of GremlinSourceVertex");
         }
 
-        final T domain = GremlinUtils.createInstance(type);
+        final T domain = GremlinUtils.createInstance(domainClass);
         final ConvertingPropertyAccessor accessor = converter.getPropertyAccessor(domain);
-        final GremlinPersistentEntity persistentEntity = converter.getPersistentEntity(type);
+        final GremlinPersistentEntity persistentEntity = converter.getPersistentEntity(domainClass);
 
-        for (final Field field : type.getDeclaredFields()) {
+        for (final Field field : FieldUtils.getAllFields(domainClass)) {
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
+            Assert.notNull(property, "persistence property should not be null");
 
-            if (property != null) {
-                if (field.getName().equals(Constants.PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
-                    accessor.setProperty(property, source.getId());
-                } else {
-                    final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
-                    accessor.setProperty(property, value);
-                }
+            if (field.getName().equals(Constants.PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
+                accessor.setProperty(property, super.getGremlinSourceId(source));
+            } else {
+                final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
+                accessor.setProperty(property, value);
             }
-            else {
-                if (field.getAnnotation(NonNull.class) != null) {
-                    throw new AssertionError("Missing non-null property " + field.getName());
-                }
-            }
-
-
         }
 
         return domain;
