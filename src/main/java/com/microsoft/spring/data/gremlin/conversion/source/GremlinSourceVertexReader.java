@@ -36,13 +36,19 @@ public class GremlinSourceVertexReader extends AbstractGremlinSourceReader imple
 
         for (final Field field : FieldUtils.getAllFields(domainClass)) {
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
-            Assert.notNull(property, "persistence property should not be null");
-
-            if (field.getName().equals(Constants.PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
-                accessor.setProperty(property, super.getGremlinSourceId(source));
-            } else {
-                final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
-                accessor.setProperty(property, value);
+//            Assert.notNull(property, "persistence property should not be null");
+            if (property != null) {
+                if (field.getName().equals(Constants.PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
+                    accessor.setProperty(property, super.getGremlinSourceId(source));
+                } else {
+                    final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
+                    accessor.setProperty(property, value);
+                }
+            }
+            else {
+                if (field.getAnnotation(NonNull.class) != null) {
+                    throw new AssertionError("Missing non-null property " + field.getName());
+                }
             }
         }
 

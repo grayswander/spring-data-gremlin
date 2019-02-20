@@ -39,22 +39,29 @@ public class GremlinSourceEdgeReader extends AbstractGremlinSourceReader impleme
 
         for (final Field field : FieldUtils.getAllFields(domainClass)) {
             final PersistentProperty property = persistentEntity.getPersistentProperty(field.getName());
-            Assert.notNull(property, "persistence property should not be null");
+//            Assert.notNull(property, "persistence property should not be null");
 
-            if (field.getName().equals(PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
-                accessor.setProperty(property, super.getGremlinSourceId(source));
-                continue;
-            } else if (field.getAnnotation(EdgeFrom.class) != null || field.getAnnotation(EdgeTo.class) != null) {
-                // We cannot do that here as the gremlin will not tell more information about vertex except Id. After
-                // the query of Edge end, we can get the Id of vertex from/to. And then we will do extra 2 query to
-                // obtain the 2 vertex and complete the edge.
-                //
-                // That work will be wrapped in GremlinTemplate insert, and skip the property here.
-                continue;
+            if (property != null) {
+                if (field.getName().equals(PROPERTY_ID) || field.getAnnotation(Id.class) != null) {
+                    accessor.setProperty(property, super.getGremlinSourceId(source));
+                    continue;
+                } else if (field.getAnnotation(EdgeFrom.class) != null || field.getAnnotation(EdgeTo.class) != null) {
+                    // We cannot do that here as the gremlin will not tell more information about vertex except Id.
+                    // After the query of Edge end, we can get the Id of vertex from/to. And then we will do extra 2
+                    // query to obtain the 2 vertex and complete the edge.
+                    //
+                    // That work will be wrapped in GremlinTemplate insert, and skip the property here.
+                    continue;
+                }
+
+                final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
+                accessor.setProperty(property, value);
             }
-
-            final Object value = super.readProperty(property, source.getProperties().get(field.getName()));
-            accessor.setProperty(property, value);
+            else {
+                if (field.getAnnotation(NonNull.class) != null) {
+                    throw new AssertionError("Missing non-null property " + field.getName());
+                }
+            }
         }
 
         return domain;
