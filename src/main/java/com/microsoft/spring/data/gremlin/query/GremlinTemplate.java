@@ -92,6 +92,7 @@ public class GremlinTemplate implements GremlinOperations, ApplicationContextAwa
 
     @NonNull
     private List<Result> executeQueryParallel(@NonNull List<String> queries) {
+        queries.stream().forEach(System.out::println);
         return queries.parallelStream()
                 .map(q -> getGremlinClient().submit(q).all())
                 .collect(toList()).parallelStream().flatMap(f -> {

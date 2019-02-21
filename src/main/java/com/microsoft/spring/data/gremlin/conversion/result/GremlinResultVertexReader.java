@@ -31,6 +31,8 @@ public class GremlinResultVertexReader extends AbstractGremlinResultReader imple
 
         final Result result = results.get(0);
 
+        System.out.println(result);
+
         Assert.isInstanceOf(Map.class, result.getObject(), "should be one instance of Map");
 
         @SuppressWarnings("unchecked") final Map<String, Object> map = (Map<String, Object>) result.getObject();

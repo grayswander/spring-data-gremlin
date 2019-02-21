@@ -33,7 +33,7 @@ public abstract class AbstractGremlinResultReader {
         @SuppressWarnings("unchecked") final ArrayList<LinkedHashMap<String, String>> mapList
                 = (ArrayList<LinkedHashMap<String, String>>) value;
 
-        Assert.isTrue(mapList.size() == 1, "should be only 1 element in ArrayList");
+//        Assert.isTrue(mapList.size() == 1, "should be only 1 element in ArrayList");
 
         return mapList.get(0).get(Constants.PROPERTY_VALUE);
     }

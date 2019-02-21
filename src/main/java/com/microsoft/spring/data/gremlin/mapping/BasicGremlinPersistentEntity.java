@@ -31,4 +31,6 @@ public class BasicGremlinPersistentEntity<T> extends BasicPersistentEntity<T, Gr
         this.context.setBeanResolver(new BeanFactoryResolver(applicationContext));
         this.context.setRootObject(applicationContext);
     }
+
+
 }

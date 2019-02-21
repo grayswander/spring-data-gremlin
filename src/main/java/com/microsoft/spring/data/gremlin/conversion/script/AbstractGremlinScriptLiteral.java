@@ -66,7 +66,9 @@ public abstract class AbstractGremlinScriptLiteral {
     }
 
     public static String generateHasLabel(@NonNull String label) {
-        return String.format("has(label, '%s')", label);
+        // g.V().or(has('label', 'Animal'), and(has('labels'),has('labels', 'Animal')))
+        // or(has('label', '%s'), and(has('labels'),has('labels', '%s')))
+        return String.format("or(has('label', '%s'), and(has('labels'),has('labels', '%s')))", label, label);
     }
 
     public static String generateHasId(@NonNull Object id) {
