@@ -125,8 +125,8 @@ public class GremlinScriptLiteralEdge extends AbstractGremlinScriptLiteral imple
         final List<String> scriptList = Arrays.asList(
                 GREMLIN_PRIMITIVE_GRAPH,                           // g
                 GREMLIN_PRIMITIVE_EDGE_ALL,                        // E()
-                generateHasLabel(source.getLabel()),               // has(label, 'label')
-                generateHas(GREMLIN_PROPERTY_CLASSNAME, className) // has(_classname, 'xxxxxx')
+                generateHasLabel(source.getLabel())//,               // has(label, 'label')
+//                generateHas(GREMLIN_PROPERTY_CLASSNAME, className) // has(_classname, 'xxxxxx')
         );
 
         return completeScript(scriptList);

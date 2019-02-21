@@ -110,8 +110,9 @@ public class GremlinScriptLiteralVertex extends AbstractGremlinScriptLiteral imp
         final List<String> scriptList = Arrays.asList(
                 GREMLIN_PRIMITIVE_GRAPH,                           // g
                 GREMLIN_PRIMITIVE_VERTEX_ALL,                      // V()
-                generateHasLabel(source.getLabel()),               // has(label, 'label')
-                generateHas(GREMLIN_PROPERTY_CLASSNAME, classname) // has(_classname, 'xxxxxx')
+                generateHasLabel(source.getLabel())//,               // has(label, 'label')
+
+//                generateHas(GREMLIN_PROPERTY_CLASSNAME, classname) // has(_classname, 'xxxxxx')
         );
 
         return completeScript(scriptList);

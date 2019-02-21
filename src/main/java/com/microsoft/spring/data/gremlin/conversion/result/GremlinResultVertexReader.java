@@ -14,8 +14,10 @@ import org.apache.tinkerpop.gremlin.driver.Result;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.microsoft.spring.data.gremlin.common.Constants.*;
 
@@ -32,6 +34,10 @@ public class GremlinResultVertexReader extends AbstractGremlinResultReader imple
         Assert.isInstanceOf(Map.class, result.getObject(), "should be one instance of Map");
 
         @SuppressWarnings("unchecked") final Map<String, Object> map = (Map<String, Object>) result.getObject();
+
+        if(! map.containsKey(PROPERTY_PROPERTIES)) {
+            map.put(PROPERTY_PROPERTIES, new LinkedHashMap<>());
+        }
 
         Assert.isTrue(map.containsKey(PROPERTY_ID), "should contain id property");
         Assert.isTrue(map.containsKey(PROPERTY_LABEL), "should contain label property");
@@ -51,12 +57,15 @@ public class GremlinResultVertexReader extends AbstractGremlinResultReader imple
 
         validate(results, source);
 
+        final String initialClassName = source.getDomainClass().getName();
+
         final Map<String, Object> map = (Map<String, Object>) results.get(0).getObject();
         final Map<String, Object> properties = (Map<String, Object>) map.get(PROPERTY_PROPERTIES);
 
         super.readResultProperties(properties, source);
 
-        final String className = source.getProperties().get(GREMLIN_PROPERTY_CLASSNAME).toString();
+        final String className = Optional.ofNullable(source.getProperties().get(GREMLIN_PROPERTY_CLASSNAME))
+                .orElse(initialClassName).toString();
 
         source.setIdField(GremlinUtils.getIdField(GremlinUtils.toEntityClass(className)));
         source.setId(map.get(PROPERTY_ID));
