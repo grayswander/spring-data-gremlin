@@ -62,8 +62,13 @@ public abstract class AbstractGremlinSource<T> implements GremlinSource<T> {
     }
 
     protected AbstractGremlinSource(Class<T> domainClass) {
-        this.domainClass = domainClass;
         this.properties = new HashMap<>();
+        this.updateDomainClass(domainClass);
+    }
+
+    @Override
+    public void updateDomainClass(Class<T> domainClass) {
+        this.domainClass = domainClass;
 
         setProperty(GREMLIN_PROPERTY_CLASSNAME, domainClass.getName());
 

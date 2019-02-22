@@ -337,9 +337,9 @@ public class GremlinTemplate implements GremlinOperations, ApplicationContextAwa
 
     private <T> T recoverDomain(@NonNull GremlinSource<T> source, @NonNull List<Result> results) {
         final T domain;
-        final Class<T> domainClass = source.getDomainClass();
 
         source.doGremlinResultRead(results);
+        final Class<T> domainClass = source.getDomainClass();
         domain = this.mappingConverter.read(domainClass, source);
 
         if (source instanceof GremlinSourceEdge) {

@@ -17,6 +17,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.microsoft.spring.data.gremlin.common.Constants.*;
 
@@ -61,12 +62,19 @@ public class GremlinResultEdgeReader extends AbstractGremlinResultReader impleme
 
         final GremlinSourceEdge sourceEdge = (GremlinSourceEdge) source;
         final Map<String, Object> map = (Map<String, Object>) results.get(0).getObject();
+        final Map<String, Object> properties = (Map<String, Object>) map.get(PROPERTY_PROPERTIES);
 
-        this.readProperties(source, (Map) map.get(PROPERTY_PROPERTIES));
+        this.readProperties(source, properties);
 
-        final String className = source.getProperties().get(GREMLIN_PROPERTY_CLASSNAME).toString();
+        final String initialClassName = source.getDomainClass().getName();
+        final String className = Optional.ofNullable(source.getProperties().get(GREMLIN_PROPERTY_CLASSNAME))
+                .orElse(initialClassName).toString();
 
-        sourceEdge.setIdField(GremlinUtils.getIdField(GremlinUtils.toEntityClass(className)));
+        final Class<?> actualDomainClass = GremlinUtils.toEntityClass(className);
+
+        source.updateDomainClass(actualDomainClass);
+
+        sourceEdge.setIdField(GremlinUtils.getIdField(actualDomainClass));
         sourceEdge.setId(map.get(PROPERTY_ID));
         sourceEdge.setLabel(map.get(PROPERTY_LABEL).toString());
         sourceEdge.setVertexIdFrom(map.get(PROPERTY_OUTV));

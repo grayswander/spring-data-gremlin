@@ -31,8 +31,6 @@ public class GremlinResultVertexReader extends AbstractGremlinResultReader imple
 
         final Result result = results.get(0);
 
-        System.out.println(result);
-
         Assert.isInstanceOf(Map.class, result.getObject(), "should be one instance of Map");
 
         @SuppressWarnings("unchecked") final Map<String, Object> map = (Map<String, Object>) result.getObject();
@@ -59,17 +57,20 @@ public class GremlinResultVertexReader extends AbstractGremlinResultReader imple
 
         validate(results, source);
 
-        final String initialClassName = source.getDomainClass().getName();
-
         final Map<String, Object> map = (Map<String, Object>) results.get(0).getObject();
         final Map<String, Object> properties = (Map<String, Object>) map.get(PROPERTY_PROPERTIES);
 
         super.readResultProperties(properties, source);
 
+        final String initialClassName = source.getDomainClass().getName();
         final String className = Optional.ofNullable(source.getProperties().get(GREMLIN_PROPERTY_CLASSNAME))
                 .orElse(initialClassName).toString();
 
-        source.setIdField(GremlinUtils.getIdField(GremlinUtils.toEntityClass(className)));
+        final Class<?> actualDomainClass = GremlinUtils.toEntityClass(className);
+
+        source.updateDomainClass(actualDomainClass);
+
+        source.setIdField(GremlinUtils.getIdField(actualDomainClass));
         source.setId(map.get(PROPERTY_ID));
         source.setLabel(map.get(PROPERTY_LABEL).toString());
     }

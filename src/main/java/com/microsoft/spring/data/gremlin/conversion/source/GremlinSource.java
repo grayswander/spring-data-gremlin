@@ -78,6 +78,14 @@ public interface GremlinSource<T> {
     Class<T> getDomainClass();
 
     /**
+     * Updates domain class.
+     * Intentionally not used setDomainClass name, to stress that appropriate
+     * initializatios are also done.
+     * @param domainClass
+     */
+    void updateDomainClass(Class<T> domainClass);
+
+    /**
      * Get the properties of domain
      *
      * @return will never be null
