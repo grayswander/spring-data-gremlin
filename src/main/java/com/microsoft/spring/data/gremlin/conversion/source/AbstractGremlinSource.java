@@ -10,6 +10,7 @@ import com.microsoft.spring.data.gremlin.conversion.MappingGremlinConverter;
 import com.microsoft.spring.data.gremlin.conversion.result.GremlinResultsReader;
 import com.microsoft.spring.data.gremlin.conversion.script.GremlinScriptLiteral;
 import com.microsoft.spring.data.gremlin.exception.GremlinInvalidEntityIdFieldException;
+import il.co.matrixbi.common.tools.ReflectionTools;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +19,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.microsoft.spring.data.gremlin.common.Constants.GREMLIN_PROPERTY_CLASSNAME;
 
@@ -40,6 +38,8 @@ public abstract class AbstractGremlinSource<T> implements GremlinSource<T> {
 
     @Getter
     private Class<T> domainClass;
+
+    private Set<String> labels;
 
     @Getter
     @Setter
@@ -66,6 +66,12 @@ public abstract class AbstractGremlinSource<T> implements GremlinSource<T> {
         this.properties = new HashMap<>();
 
         setProperty(GREMLIN_PROPERTY_CLASSNAME, domainClass.getName());
+
+        this.labels = new HashSet<>(
+                ReflectionTools.getClassLabels(
+                        domainClass,
+                        ReflectionTools.LabelNamingConvention.SIMPLE)
+        );
     }
 
     @Override
@@ -155,6 +161,11 @@ public abstract class AbstractGremlinSource<T> implements GremlinSource<T> {
         } else {
             this.properties.put(key, value);
         }
+    }
+
+    @Override
+    public Set<String> getLabels() {
+        return labels;
     }
 }
 

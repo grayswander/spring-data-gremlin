@@ -8,6 +8,7 @@ package com.microsoft.spring.data.gremlin.conversion.script;
 import com.microsoft.spring.data.gremlin.annotation.GeneratedValue;
 import com.microsoft.spring.data.gremlin.common.GremlinEntityType;
 import com.microsoft.spring.data.gremlin.common.GremlinUtils;
+import com.microsoft.spring.data.gremlin.conversion.source.GremlinSource;
 import com.microsoft.spring.data.gremlin.exception.GremlinInvalidEntityIdFieldException;
 import com.microsoft.spring.data.gremlin.exception.GremlinUnexpectedEntityTypeException;
 import lombok.NonNull;
@@ -183,5 +184,15 @@ public abstract class AbstractGremlinScriptLiteral {
 
             return hasScript;
         }
+    }
+
+    public List<String> generateLabelsList(@NonNull GremlinSource source) {
+        final List<String> scriptList = new ArrayList<>();
+
+        final Set<String> labels = source.getLabels();
+        for (String label: labels) {
+            scriptList.add(String.format("property(list, \'labels\', \'%s\')", label));
+        }
+        return scriptList;
     }
 }

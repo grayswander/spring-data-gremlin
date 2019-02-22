@@ -37,6 +37,8 @@ public class GremlinScriptLiteralVertex extends AbstractGremlinScriptLiteral imp
 
         source.getId().ifPresent(id -> scriptList.add(generatePropertyWithRequiredId(id))); // property(id, xxx)
 
+        scriptList.addAll(generateLabelsList(source));
+
         scriptList.addAll(generateProperties(source.getProperties()));
 
         return completeScript(scriptList);

@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Provider interface to obtain and store information from domain class.
@@ -122,4 +123,9 @@ public interface GremlinSource<T> {
      * Set the SourceReader for reading data from GremlinSource to domain
      */
     void setGremlinSourceReader(GremlinSourceReader reader);
+
+    /**
+     * Get a list of hierarchy labels
+     */
+    Set<String> getLabels();
 }

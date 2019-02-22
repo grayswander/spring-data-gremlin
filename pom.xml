@@ -164,6 +164,13 @@
             <artifactId>applicationinsights-core</artifactId>
             <version>${azure.applicationinsights.version}</version>
         </dependency>
+
+        <!-- Matrix BI -->
+        <dependency>
+            <groupId>il.co.matrixbi.tools</groupId>
+            <artifactId>reflection-tools</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <build>
